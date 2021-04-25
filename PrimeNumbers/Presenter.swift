@@ -11,11 +11,21 @@ import UIKit
 protocol PresenterDelegate {
     func setCounter()
 }
-//General
+
+protocol PresenterProtocol {
+    var counter : Int { get }
+    func increase()
+    func decrease()
+    func isPrime(value: Int) -> Bool
+}
+
+
+//General for all ViewControllers (ViewController, TableViewController, etc...)
 typealias ViewPresenter = PresenterDelegate & UIResponder
 
-class Presenter {
-    weak var delgate: ViewPresenter?
+class Presenter : PresenterProtocol {
+   
+    weak var delegate: ViewProtocol?
     
     var counter = 0 {
         didSet{
@@ -23,7 +33,21 @@ class Presenter {
         }
     }
     
-     func isPrime(value: Int) -> Bool {
+    init(delegate: ViewProtocol) {
+        self.delegate = delegate
+    }
+    
+    func increase() {
+        counter += 1
+    }
+    
+    func decrease() {
+        guard counter > 0 else { return }
+        
+        counter -= 1
+    }
+    
+    func isPrime(value: Int) -> Bool {
         if value <= 1 { return false }
         if value == 2 { return true }
         for number in 2..<value {
@@ -32,7 +56,8 @@ class Presenter {
         return true
     }
     
-    private func setCounter() {
-        delgate?.setCounter()
+    
+    func setCounter() {
+        delegate?.setCounter(with: counter)
     }
 }
